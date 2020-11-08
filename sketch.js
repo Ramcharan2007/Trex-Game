@@ -7,6 +7,7 @@ var ground, invisibleGround, groundImage;
 
 var cloudsGroup, cloudImage;
 var obstaclesGroup, obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
+var obstacle_flying,obstacle_flyingImage,obstacle_stopped;
 
 var score=0;
 
@@ -17,6 +18,8 @@ localStorage["HighestScore"] = 0;
 function preload(){
   trex_running =   loadAnimation("trex1.png","trex3.png","trex4.png");
   trex_collided = loadAnimation("trex_collided.png");
+  obstacle_flyingImage = loadAnimation("Flying_1.png","Flying_2.png");
+  obstacle_stopped = loadAnimation("Flying_1.png");
   
   groundImage = loadImage("ground2.png");
   
@@ -108,6 +111,7 @@ function draw() {
     
     //change the trex animation
     trex.changeAnimation("collided",trex_collided);
+    obstacle_flying.changeAnimation("stoped",obstacle_stopped);
     
     //set lifetime of the game objects so that they are never destroyed
     obstaclesGroup.setLifetimeEach(-1);
@@ -174,6 +178,20 @@ function spawnObstacles() {
     //add each obstacle to the group
     obstaclesGroup.add(obstacle);
   }
+  
+  if(frameCount%100===0)
+  {
+      obstacle_flying=createSprite(600,Math.round(random(50,160)),30,10);
+      obstacle_flying.addAnimation("flying",obstacle_flyingImage);
+      obstacle_flying.addAnimation("stoped",obstacle_stopped);
+      obstacle_flying.velocityX = -(6 + 3*score/100);
+      obstacle_flying.lifetime = 300;
+      obstacle_flying.scale=0.75;
+      obstacle_flying.setCollider("rectangle",0,0,40,40);
+      obstacle_flying.depth=cloud.depth;
+      obstacle_flying.depth=obstacle_flying.depth+1;
+      obstaclesGroup.add(obstacle_flying);
+  }
 }
 
 function reset(){
@@ -185,6 +203,7 @@ function reset(){
   cloudsGroup.destroyEach();
   
   trex.changeAnimation("running",trex_running);
+  obstacle_flying.changeAnimation("flying",obstacle_flyingImage);
   
   if(localStorage["HighestScore"]<score){
     localStorage["HighestScore"] = score;
